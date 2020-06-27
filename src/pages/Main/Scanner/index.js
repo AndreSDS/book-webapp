@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Quagga from 'quagga';
 
 import { validateIsbn } from '../../../services/books';
 
 import { Video, Container, ScanMarker } from './styles';
 
-function Scanner() {
+function Scanner({ onScan }) {
   let scannerAttemps = 0;
 
   const onDetected = result => {
@@ -14,12 +15,11 @@ function Scanner() {
     const isbn = result.codeResult.code;
     //if isbn válido
     if (validateIsbn(isbn)) {
-      alert(`${isbn} : ISBN válido.`);
+      onScan(isbn);
       return;
-    } else {
-      if (scannerAttemps >= 5) {
-        alert('Não é possível ler o código do livro. Tente novamente.');
-      }
+    }
+    if (scannerAttemps >= 5) {
+      alert('Não é possível ler o código do livro. Tente novamente.');
     }
     scannerAttemps++;
     Quagga.onDetected(onDetected);
@@ -68,16 +68,21 @@ function Scanner() {
             alt="área para leitura do código de barras"
           />
           <p className="label">Aponte para o código de barras do livro</p>
+          <img
+            className="logo"
+            width="137"
+            height="69"
+            src="../../../assets/logo.svg"
+            alt="logo marca"
+          />
         </ScanMarker>
-        <img
-          width="137"
-          height="69"
-          src="../../../assets/logo.svg"
-          alt="logo marca"
-        />
       </Container>
     </>
   );
 }
+
+Scanner.PropTypes = {
+  onScan: PropTypes.func,
+};
 
 export default Scanner;
